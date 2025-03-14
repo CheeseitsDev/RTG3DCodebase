@@ -67,3 +67,9 @@ void Camera::SetRenderValues(unsigned int _prog)
 	if (Helper::SetUniformLocation(_prog, "camPos", &loc))
 		glUniform3fv(loc, 1, glm::value_ptr(GetPos()));
 }
+
+void Camera::SetAspect(float _aspect) 
+{
+	float aspect_ratio = _aspect;
+	m_projectionMatrix = glm::perspective(glm::radians(m_fov), aspect_ratio, m_near, m_far);
+}

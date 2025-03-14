@@ -47,6 +47,10 @@ public:
 	//initialise links between items in the scene
 	void Init();
 
+	void SetCam();
+
+	void UpdateCams(float _aspect);
+
 protected:
 
 	//data structures containing pointers to all our stuff

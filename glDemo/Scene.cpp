@@ -315,7 +315,7 @@ void Scene::Init()
 	for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
 	{
 		(*it)->Init(100, 100, this);// TODO: set correct screen sizes here
-
+		
 		//if a camera is called MAIN
 		//this will be the starting camera used
 		if ((*it)->GetName() == "MAIN")
@@ -337,5 +337,34 @@ void Scene::Init()
 	for (list<GameObject*>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
 	{
 		(*it)->Init(this);
+	}
+}
+
+void Scene::SetCam()
+{
+	if (m_useCameraIndex < m_numCameras)
+	{
+		for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
+		{
+			if (m_useCamera->GetName() != (*it)->GetName())
+			{
+				m_useCamera = (*it);
+				m_useCameraIndex++;
+				break;
+			}
+		}
+	}
+	else
+	{
+		m_useCamera = (*m_Cameras.begin());
+		m_useCameraIndex = 0;
+	}
+}
+
+void Scene::UpdateCams(float _aspect)
+{
+	for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
+	{
+		(*it)->SetAspect(_aspect);
 	}
 }
