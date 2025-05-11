@@ -9,6 +9,8 @@ using namespace std;
 
 class GameObject;
 class Camera;
+class ArcballCamera;
+class FPSCam;
 class Light;
 class Model;
 class Texture;
@@ -47,6 +49,20 @@ public:
 	//initialise links between items in the scene
 	void Init();
 
+	void ACam();
+
+	void FCam();
+
+	void MoveCam(float x, float y);
+
+	void StopCamMovement();
+
+	void ZoomCamInAndOut(float radius);
+
+	string CurrentCam();
+
+	void SetInput(int input);
+
 protected:
 
 	//data structures containing pointers to all our stuff
@@ -64,7 +80,12 @@ protected:
 	std::list<GameObject*> m_GameObjects;
 
 	Camera* m_useCamera = nullptr; //current main camera in use
+	ArcballCamera* aCam = nullptr;
+	FPSCam* fCam = nullptr;
 	int m_useCameraIndex = 0;
+	float moveX;
+	float moveY;
+	int input;
 	//TODO: pass down the same keyboard input from main so that we skip through all the cameras
 };
 

@@ -117,6 +117,9 @@
     <ClInclude Include="DirectionLight.h">
       <Filter>Scene Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FPSCam.h">
+      <Filter>Scene Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -186,6 +189,9 @@
       <Filter>Scene Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DirectionLight.cpp">
+      <Filter>Scene Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FPSCam.cpp">
       <Filter>Scene Source Files</Filter>
     </ClCompile>
   </ItemGroup>

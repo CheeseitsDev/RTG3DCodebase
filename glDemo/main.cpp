@@ -25,23 +25,10 @@ double				g_prevMouseX, g_prevMouseY;
 
 // Global Example objects
 // shouldn't really be anything in here for the final submission
-ArcballCamera* g_mainCamera = nullptr;
+//ArcballCamera* g_mainCamera = nullptr;
 CGPrincipleAxes* g_principleAxes = nullptr;
-Cube* g_cube = nullptr;
 
-GLuint g_flatColourShader;
-
-GLuint g_texDirLightShader;
-vec3 g_DLdirection = vec3(0.0f, 1.0f, 0.0f);
-vec3 g_DLcolour = vec3(1.0f, 1.0f, 1.0f);
-vec3 g_DLambient = vec3(0.2f, 0.2f, 0.2f);
-
-AIMesh* g_creatureMesh = nullptr;
-vec3 g_beastPos = vec3(2.0f, 0.0f, 0.0f);
-float g_beastRotation = 0.0f;
-AIMesh* g_planetMesh = nullptr;
-
-int g_showing = 0;
+int g_showing = 2;
 int g_NumExamples = 3;
 
 //Global Game Object
@@ -130,28 +117,9 @@ int main()
 	// Setup the Example Objects
 	//
 
-	g_texDirLightShader = setupShaders(string("Assets\\Shaders\\texture-directional.vert"), string("Assets\\Shaders\\texture-directional.frag"));
-	g_flatColourShader = setupShaders(string("Assets\\Shaders\\flatColour.vert"), string("Assets\\Shaders\\flatColour.frag"));
-
-	g_mainCamera = new ArcballCamera(0.0f, 0.0f, 1.98595f, 55.0f, 1.0f, 0.1f, 500.0f);
+	//g_mainCamera = new ArcballCamera(0.0f, 0.0f, 1.98595f, 55.0f, 1.0f, 0.1f, 500.0f);
 
 	g_principleAxes = new CGPrincipleAxes();
-
-	g_cube = new Cube();
-
-	g_creatureMesh = new AIMesh(string("Assets\\beast\\beast.obj"));
-	if (g_creatureMesh) {
-		g_creatureMesh->addTexture(string("Assets\\beast\\beast_texture.bmp"), FIF_BMP);
-	}
-
-	g_planetMesh = new AIMesh(string("Assets\\gsphere.obj"));
-	if (g_planetMesh) {
-		g_planetMesh->addTexture(string("Assets\\Textures\\Hodges_G_MountainRock1.jpg"), FIF_JPEG);
-	}
-
-	//
-	//Set up Scene class
-	//
 
 	g_Scene = new Scene();
 
@@ -200,86 +168,21 @@ void renderScene()
 	// Clear the rendering window
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	mat4 cameraTransform = g_mainCamera->projectionTransform() * g_mainCamera->viewTransform();
+	//mat4 cameraTransform = g_mainCamera->projectionTransform() * g_mainCamera->viewTransform();
 
-	mat4 cameraProjection = g_mainCamera->projectionTransform();
-	mat4 cameraView = g_mainCamera->viewTransform() * translate(identity<mat4>(), -g_beastPos);
-
-#// Render principle axes - no modelling transforms so just use cameraTransform
-	if (true)
-	{
-		// Render axes 
-		glUseProgram(g_flatColourShader);
-		GLint pLocation;
-		Helper::SetUniformLocation(g_flatColourShader, "viewMatrix", &pLocation);
-		glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraView);
-		Helper::SetUniformLocation(g_flatColourShader, "projMatrix", &pLocation);
-		glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraProjection);
-		Helper::SetUniformLocation(g_flatColourShader, "modelMatrix", &pLocation);
-		mat4 modelTransform = identity<mat4>();
-		glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
-
-		g_principleAxes->render();
-	}
+	//mat4 cameraProjection = g_mainCamera->projectionTransform();
 
 	switch (g_showing)
 	{
 	case 0:
 	{
-		glUseProgram(g_texDirLightShader);
-
-		GLint pLocation;
-		Helper::SetUniformLocation(g_texDirLightShader, "viewMatrix", &pLocation);
-		glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraView);
-		Helper::SetUniformLocation(g_texDirLightShader, "projMatrix", &pLocation);
-		glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraProjection);
-		Helper::SetUniformLocation(g_texDirLightShader, "texture", &pLocation);
-		glUniform1i(pLocation, 0); // set to point to texture unit 0 for AIMeshes
-		Helper::SetUniformLocation(g_texDirLightShader, "DIRDir", &pLocation);
-		glUniform3fv(pLocation, 1, (GLfloat*)&g_DLdirection);
-		Helper::SetUniformLocation(g_texDirLightShader, "DIRCol", &pLocation);
-		glUniform3fv(pLocation, 1, (GLfloat*)&g_DLcolour);
-		Helper::SetUniformLocation(g_texDirLightShader, "DIRAmb", &pLocation);
-		glUniform3fv(pLocation, 1, (GLfloat*)&g_DLambient);
-		if (g_creatureMesh) {
-
-			// Setup transforms
-			Helper::SetUniformLocation(g_texDirLightShader, "modelMatrix", &pLocation);
-			mat4 modelTransform = glm::translate(identity<mat4>(), g_beastPos) * eulerAngleY<float>(glm::radians<float>(g_beastRotation));
-			glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
-
-			g_creatureMesh->setupTextures();
-			g_creatureMesh->render();
-		}
-
-		if (g_planetMesh) {
-
-			// Setup transforms
-			Helper::SetUniformLocation(g_texDirLightShader, "modelMatrix", &pLocation);
-			mat4 modelTransform = glm::translate(identity<mat4>(), vec3(4.0, 4.0, 4.0));
-			glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
-
-			g_planetMesh->setupTextures();
-			g_planetMesh->render();
-		}
+		g_Scene->Render();
 	}
 	break;
 
 	case 1:
 	{
-		// Render cube 
-		glUseProgram(g_flatColourShader);
-		GLint pLocation;
-		Helper::SetUniformLocation(g_flatColourShader, "viewMatrix", &pLocation);
-		glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraView);
-		Helper::SetUniformLocation(g_flatColourShader, "projMatrix", &pLocation);
-		glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&cameraProjection);
-		Helper::SetUniformLocation(g_flatColourShader, "modelMatrix", &pLocation);
-		mat4 modelTransform = glm::translate(identity<mat4>(), vec3(2.0, 0.0, 2.0));
-		glUniformMatrix4fv(pLocation, 1, GL_FALSE, (GLfloat*)&modelTransform);
-
-		g_cube->render();
-		break;
+		g_Scene->Render();
 	}
 	case 2:
 		g_Scene->Render();
@@ -310,10 +213,10 @@ void updateScene()
 // Function to call when window resized
 void resizeWindow(GLFWwindow* _window, int _width, int _height)
 {
-	if (g_mainCamera) {
+	/*if (g_mainCamera) {
 
 		g_mainCamera->setAspect((float)_width / (float)_height);
-	}
+	}*/
 
 	glViewport(0, 0, _width, _height);		// Draw into entire window
 }
@@ -334,7 +237,25 @@ void keyboardHandler(GLFWwindow* _window, int _key, int _scancode, int _action, 
 		case GLFW_KEY_SPACE:
 			g_showing++;
 			g_showing = g_showing % g_NumExamples;
-
+			break;
+		case GLFW_KEY_BACKSPACE:
+			g_Scene->ACam();
+			break;
+		case GLFW_KEY_F:
+			g_Scene->FCam();
+			break;
+		case GLFW_KEY_W:
+			g_Scene->SetInput(1);
+			break;
+		case GLFW_KEY_A:
+			g_Scene->SetInput(2);
+			break;
+		case GLFW_KEY_S:
+			g_Scene->SetInput(3);
+			break;
+		case GLFW_KEY_D:
+			g_Scene->SetInput(4);
+			break;
 		default:
 		{
 		}
@@ -345,6 +266,18 @@ void keyboardHandler(GLFWwindow* _window, int _key, int _scancode, int _action, 
 		// handle key release events
 		switch (_key)
 		{
+		case GLFW_KEY_W:
+			g_Scene->SetInput(0);
+			break;
+		case GLFW_KEY_A:
+			g_Scene->SetInput(0);
+			break;
+		case GLFW_KEY_S:
+			g_Scene->SetInput(0);
+			break;
+		case GLFW_KEY_D:
+			g_Scene->SetInput(0);
+			break;
 		default:
 		{
 		}
@@ -355,19 +288,18 @@ void keyboardHandler(GLFWwindow* _window, int _key, int _scancode, int _action, 
 
 void mouseMoveHandler(GLFWwindow* _window, double _xpos, double _ypos) 
 {
-	if (g_mouseDown) {
+	//float tDelta = gameClock->gameTimeDelta();
 
-		//float tDelta = gameClock->gameTimeDelta();
+	float dx = float(_xpos - g_prevMouseX);// *360.0f * tDelta;
+	float dy = float(_ypos - g_prevMouseY);// *360.0f * tDelta;
 
-		float dx = float(_xpos - g_prevMouseX);// *360.0f * tDelta;
-		float dy = float(_ypos - g_prevMouseY);// *360.0f * tDelta;
+	/*if (g_mainCamera)
+		g_mainCamera->rotateCamera(-dy, -dx);*/
 
-		if (g_mainCamera)
-			g_mainCamera->rotateCamera(-dy, -dx);
+	g_Scene->MoveCam(-dx, -dy);
 
-		g_prevMouseX = _xpos;
-		g_prevMouseY = _ypos;
-	}
+	g_prevMouseX = _xpos;
+	g_prevMouseY = _ypos;
 }
 
 void mouseButtonHandler(GLFWwindow* _window, int _button, int _action, int _mods) 
@@ -382,18 +314,29 @@ void mouseButtonHandler(GLFWwindow* _window, int _button, int _action, int _mods
 		else if (_action == GLFW_RELEASE) 
 		{
 			g_mouseDown = false;
+
+			g_Scene->StopCamMovement();
 		}
 	}
 }
 
 void mouseScrollHandler(GLFWwindow* _window, double _xoffset, double _yoffset) {
 
-	if (g_mainCamera) 
+	/*if (g_mainCamera) 
 	{
 		if (_yoffset < 0.0)
 			g_mainCamera->scaleRadius(1.1f);
 		else if (_yoffset > 0.0)
 			g_mainCamera->scaleRadius(0.9f);
+	}*/
+
+	if (_yoffset < 0.0)
+	{
+		g_Scene->ZoomCamInAndOut(1.1f);
+	}
+	else if (_yoffset > 0.0)
+	{
+		g_Scene->ZoomCamInAndOut(0.9f);
 	}
 }
 

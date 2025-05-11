@@ -2,6 +2,8 @@
 #include "GameObject.h"
 #include "CameraFactory.h"
 #include "Camera.h"
+#include "ArcballCamera.h"
+#include "FPSCam.h"
 #include "LightFactory.h"
 #include "Light.h"
 #include "ModelFactory.h"
@@ -33,7 +35,7 @@ void Scene::Update(float _dt)
 	//update all cameras
 	for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); it++)
 	{
-		(*it)->Tick(_dt);
+		(*it)->Tick(_dt, moveX, moveY, CurrentCam(), input);
 	}
 
 	//update all GameObjects
@@ -149,6 +151,19 @@ void Scene::Render()
 
 			//set up for uniform shader values for current camera
 			m_useCamera->SetRenderValues(SP);
+
+			if (m_useCamera->GetName() == "ACAM")
+			{
+				aCam = dynamic_cast<ArcballCamera*>(m_useCamera);
+
+				mat4 view = aCam->viewTransform();
+				mat4 projection = aCam->projectionTransform();
+			}
+
+			if (m_useCamera->GetName() == "FPSCAM")
+			{
+				fCam = dynamic_cast<FPSCam*>(m_useCamera);
+			}
 
 			//loop through setting up uniform shader values for anything else
 			SetShaderUniforms(SP);
@@ -338,4 +353,90 @@ void Scene::Init()
 	{
 		(*it)->Init(this);
 	}
+}
+
+string Scene::CurrentCam()
+{
+	return m_useCamera->GetName();
+}
+
+void Scene::ACam()
+{
+	if (m_useCamera->GetName() != "ACAM")
+	{
+		for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
+		{
+			if ((*it)->GetName() == "ACAM")
+			{
+				m_useCamera = (*it);
+				break;
+			}
+		}
+	}
+	else
+	{
+		for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
+		{
+			if ((*it)->GetName() == "CAM1")
+			{
+				m_useCamera = (*it);
+				break;
+			}
+		}
+	}
+}
+
+void Scene::FCam()
+{
+	if (m_useCamera->GetName() != "FPSCAM")
+	{
+		for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
+		{
+			if ((*it)->GetName() == "FPSCAM")
+			{
+				m_useCamera = (*it);
+				break;
+			}
+		}
+	}
+	else
+	{
+		for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
+		{
+			if ((*it)->GetName() == "CAM1")
+			{
+				m_useCamera = (*it);
+				break;
+			}
+		}
+	}
+}
+
+void Scene::MoveCam(float x, float y)
+{
+	moveX = x;
+	moveY = y;
+}
+
+void Scene::StopCamMovement()
+{
+	moveX = 0;
+	moveY = 0;
+}
+
+void Scene::ZoomCamInAndOut(float radius)
+{
+	if (m_useCamera->GetName() == "ACAM")
+	{
+		cout << radius << endl;
+		aCam->scaleRadius(radius);
+	}
+}
+
+
+void Scene::SetInput(int userInput)
+{
+	input = userInput;
+
+	cout << "Input: " << input << endl;
 }

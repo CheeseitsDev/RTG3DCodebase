@@ -141,6 +141,7 @@
     <ClInclude Include="ArcballCamera.h" />
     <ClInclude Include="CameraFactory.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="FPSCam.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="core.h" />
     <ClInclude Include="Cube.h" />
@@ -172,6 +173,7 @@
     <ClCompile Include="ArcballCamera.cpp" />
     <ClCompile Include="CameraFactory.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="FPSCam.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="core.cpp" />
     <ClCompile Include="Cube.cpp" />

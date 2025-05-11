@@ -15,6 +15,8 @@ using namespace glm;
 class cTransform;
 class Light;
 class Scene;
+class FPSCam;
+class ArcballCamera;
 
 //base class for a camera
 
@@ -31,7 +33,7 @@ public:
 
 	//tick this camera
 	//TODO: possibly pass keyboard / mouse stuff down here for player controls?
-	virtual void Tick(float _dt);
+	virtual void Tick(float _dt, float x, float y, string currentCam, int input);
 
 	//load camera info from the mainfest
 	virtual void Load(ifstream& _file);
@@ -78,5 +80,8 @@ protected:
 
 	string m_name;
 	string m_type;
+
+	FPSCam* fCam = nullptr;
+	ArcballCamera* aCam = nullptr;
 };
 
