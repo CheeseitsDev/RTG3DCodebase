@@ -203,6 +203,8 @@
     <None Include="Assets\Shaders\flatColour.vert" />
     <None Include="Assets\Shaders\texture-directional.frag" />
     <None Include="Assets\Shaders\texture-directional.vert" />
+    <None Include="transparent.frag" />
+    <None Include="transparent.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

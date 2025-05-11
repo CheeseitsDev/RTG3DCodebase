@@ -87,7 +87,7 @@ NAME: CUBE
 FILE: Assets\\cube_highpoly.obj
 }
 
-TEXTURES 6
+TEXTURES 8
 {
 TYPE: FIF_BMP
 NAME: BEAST
@@ -118,8 +118,18 @@ TYPE: FIF_JPEG
 NAME: DUCK
 FILE: Assets\\duck\\rubber_duck_toy_diff_4k.jpg
 }
+{
+TYPE: FIF_PNG
+NAME: TRANSPARENT
+FILE: Assets\\Textures\\transparent.png
+}
+{
+TYPE: FIF_PNG
+NAME: TRANSPARENT2
+FILE: Assets\\Textures\\transparent2.png
+}
 
-SHADERS 2
+SHADERS 3
 {
 NAME: FLAT
 VERTFILE: Assets\\Shaders\\flatColour.vert
@@ -129,6 +139,11 @@ FRAGFILE: Assets\\Shaders\\flatColour.frag
 NAME: TEXDIR
 VERTFILE: Assets\\Shaders\\texture-directional.vert
 FRAGFILE: Assets\\Shaders\\texture-directional.frag
+}
+{
+NAME: TRANSPARENT
+VERTFILE: Assets\\Shaders\\transparent.vert
+FRAGFILE: Assets\\Shaders\\transparent.frag
 }
 
 GAMEOBJECTS 4
@@ -173,6 +188,6 @@ ROT: 0.0 0.0 0.0
 SCALE: 1.0 1.0 1.0
 ROTINC: 0.0 0.0 0.0
 MODEL: CUBE
-TEXTURE: ROCK
-SHADER: TEXDIR
+TEXTURE: TRANSPARENT2
+SHADER: TRANSPARENT
 }
