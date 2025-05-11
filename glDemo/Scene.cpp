@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "CameraFactory.h"
 #include "Camera.h"
+#include "FPSCam.h"
 #include "LightFactory.h"
 #include "Light.h"
 #include "ModelFactory.h"
@@ -22,7 +23,7 @@ Scene::~Scene()
 }
 
 //tick all my Game Objects, lights and cameras
-void Scene::Update(float _dt)
+void Scene::Update(float _dt, int _input)
 {
 	//update all lights
 	for (list<Light*>::iterator it = m_Lights.begin(); it != m_Lights.end(); it++)
@@ -33,7 +34,7 @@ void Scene::Update(float _dt)
 	//update all cameras
 	for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); it++)
 	{
-		(*it)->Tick(_dt);
+		(*it)->Tick(_dt, _input);
 	}
 
 	//update all GameObjects
@@ -346,11 +347,14 @@ void Scene::SetCam()
 	{
 		for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
 		{
-			if (m_useCamera->GetName() != (*it)->GetName())
+			for (int i = 0; i < m_numCameras; i++)
 			{
-				m_useCamera = (*it);
-				m_useCameraIndex++;
-				break;
+				if (i == m_useCameraIndex)
+				{
+					m_useCamera = (*it);
+					m_useCameraIndex++;
+					break;
+				}
 			}
 		}
 	}
@@ -361,10 +365,43 @@ void Scene::SetCam()
 	}
 }
 
+void Scene::SetACam()
+{
+	for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
+	{
+		if ((*it)->GetType() == "ARCBALLCAM")
+		{
+			m_useCamera = (*it);
+		}
+	}
+}
+
+void Scene::SetFPSCam()
+{
+	for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
+	{
+		if ((*it)->GetType() == "FPSCAM")
+		{
+			m_useCamera = (*it);
+		}
+	}
+}
+
 void Scene::UpdateCams(float _aspect)
 {
 	for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
 	{
 		(*it)->SetAspect(_aspect);
+	}
+}
+
+void Scene::MoveFPSCam(int input)
+{
+	for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
+	{
+		if ((*it)->GetType() == "FPSCAM")
+		{
+			
+		}
 	}
 }

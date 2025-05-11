@@ -1,4 +1,4 @@
-CAMERAS 4
+CAMERAS 6
 {
 TYPE: CAMERA
 NAME: CAM1
@@ -30,6 +30,24 @@ FAR 100.0
 TYPE: CAMERA
 NAME: CAM4
 POS:  0.0 5.0 -5.0
+LOOKAT: 0.0 0.0 0.0
+FOV: 45.0
+NEAR: 0.5
+FAR 100.0
+}
+{
+TYPE: ARCBALLCAM
+NAME: ACAM
+POS:  0.0 5.0 -5.0
+LOOKAT: 0.0 0.0 0.0
+FOV: 45.0
+NEAR: 0.5
+FAR 100.0
+}
+{
+TYPE: FPSCAM
+NAME: FPSCAM
+POS:  20.0 5.0 -5.0
 LOOKAT: 0.0 0.0 0.0
 FOV: 45.0
 NEAR: 0.5
@@ -74,7 +92,7 @@ AMB: 0.2 0.2 0.2
 DIR: 0.0 1.0 0.0
 }
 
-MODELS 3
+MODELS 4
 {
 TYPE: AI
 NAME: BEAST
@@ -89,6 +107,11 @@ FILE: Assets\\gsphere.obj
 TYPE: AI
 NAME: DUCK
 FILE: Assets\\duck\\rubber_duck_toy_4k.obj
+}
+{
+TYPE: AI
+NAME: CUBE
+FILE: Assets\\cube_highpoly.obj
 }
 
 TEXTURES 6
@@ -123,7 +146,7 @@ NAME: DUCK
 FILE: Assets\\duck\\rubber_duck_toy_diff_4k.jpg
 }
 
-SHADERS 2
+SHADERS 3
 {
 NAME: FLAT
 VERTFILE: Assets\\Shaders\\flatColour.vert
@@ -134,8 +157,13 @@ NAME: TEXDIR
 VERTFILE: Assets\\Shaders\\texture-directional.vert
 FRAGFILE: Assets\\Shaders\\texture-directional.frag
 }
+{
+NAME: FRAG
+VERTFILE: Assets\\Shaders\\fragment.vert
+FRAGFILE: Assets\\Shaders\\fragment.frag
+}
 
-GAMEOBJECTS 3
+GAMEOBJECTS 4
 {
 TYPE: EXAMPLE
 NAME: BEAST
@@ -167,5 +195,16 @@ SCALE: 10.0 10.0 10.0
 ROTINC: 0.0 0.1 0.001
 MODEL: DUCK
 TEXTURE: DUCK
+SHADER: TEXDIR
+}
+{
+TYPE: EXAMPLE
+NAME: CUBE
+POS: 10.0 10.0 10.0
+ROT: 0.0 0.0 0.0 
+SCALE: 10.0 10.0 10.0
+ROTINC: 0.0 0.1 0.001
+MODEL: CUBE
+TEXTURE: ROCK
 SHADER: TEXDIR
 }

@@ -43,9 +43,14 @@ AIMesh* g_planetMesh = nullptr;
 AIMesh* g_duckMesh = nullptr;
 vec3 g_duckPos = vec3(-4.0f, -4.0f, -4.0f);
 float g_duckRotation = 0.0f;
+AIMesh* g_cubeMesh = nullptr;
+vec3 g_cubePos = vec3(5.0f, 0.0f, 0.0f);
+float g_cubeRotation = 0.0f;
 
-int g_showing = 2;
+int g_showing = 0;
 int g_NumExamples = 3;
+
+int input = 0;
 
 //Global Game Object
 Scene* g_Scene = nullptr;
@@ -155,6 +160,11 @@ int main()
 	g_duckMesh = new AIMesh(string("Assets\\duck\\rubber_duck_toy_4k.obj"));
 	if (g_duckMesh) {
 		g_duckMesh->addTexture(string("Assets\\duck\\rubber_duck_toy_diff_4k.jpg"), FIF_JPEG);
+	}
+
+	g_cubeMesh = new AIMesh(string("Assets\\cube_highpoly.obj"));
+	if (g_cubeMesh) {
+		g_cubeMesh->addTexture(string("Assets\\Textures\\Hodges_G_MountainRock1.jpg"), FIF_JPEG);
 	}
 
 	//
@@ -319,7 +329,7 @@ void updateScene()
 		tDelta = (float)g_gameClock->gameTimeDelta();
 	}
 
-	g_Scene->Update(tDelta);
+	g_Scene->Update(tDelta, input);
 }
 
 
@@ -335,7 +345,7 @@ void resizeWindow(GLFWwindow* _window, int _width, int _height)
 		g_mainCamera->setAspect((float)_width / (float)_height);
 	}
 
-	g_Scene->UpdateCams((float)_width / (float)_height);
+	//g_Scene->UpdateCams((float)_width / (float)_height);
 
 	glViewport(0, 0, _width, _height);		// Draw into entire window
 }
@@ -360,7 +370,24 @@ void keyboardHandler(GLFWwindow* _window, int _key, int _scancode, int _action, 
 		case GLFW_KEY_ENTER:
 			g_Scene->SetCam();
 			break;
-
+		case GLFW_KEY_BACKSPACE:
+			g_Scene->SetACam();
+			break;
+		case GLFW_KEY_F:
+			g_Scene->SetFPSCam();
+			break;
+		case GLFW_KEY_W:
+			input = 1;
+			break;
+		case GLFW_KEY_A:
+			input = 2;
+			break;
+		case GLFW_KEY_S:
+			input = 3;
+			break;
+		case GLFW_KEY_D:
+			input = 4;
+			break;
 		default:
 		{
 		}
@@ -371,6 +398,18 @@ void keyboardHandler(GLFWwindow* _window, int _key, int _scancode, int _action, 
 		// handle key release events
 		switch (_key)
 		{
+		case GLFW_KEY_W:
+			input = 0;
+			break;
+		case GLFW_KEY_A:
+			input = 0;
+			break;
+		case GLFW_KEY_S:
+			input = 0;
+			break;
+		case GLFW_KEY_D:
+			input = 0;
+			break;
 		default:
 		{
 		}

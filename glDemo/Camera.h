@@ -31,7 +31,7 @@ public:
 
 	//tick this camera
 	//TODO: possibly pass keyboard / mouse stuff down here for player controls?
-	virtual void Tick(float _dt);
+	virtual void Tick(float _dt, int input);
 
 	//load camera info from the mainfest
 	virtual void Load(ifstream& _file);

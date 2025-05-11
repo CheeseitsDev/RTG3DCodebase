@@ -9,6 +9,7 @@ using namespace std;
 
 class GameObject;
 class Camera;
+class FPSCam;
 class Light;
 class Model;
 class Texture;
@@ -22,7 +23,7 @@ public:
 	~Scene();
 
 	//tick all GOs
-	void Update(float _dt);
+	void Update(float _dt, int _input);
 
 	//add this GO to my list
 	void AddGameObject(GameObject* _new);
@@ -49,7 +50,13 @@ public:
 
 	void SetCam();
 
+	void SetACam();
+
+	void SetFPSCam();
+
 	void UpdateCams(float _aspect);
+
+	void MoveFPSCam(int input);
 
 protected:
 
