@@ -1,6 +1,7 @@
 #include "GameObjectFactory.h"
 #include "GameObject.h"
-#include "ExampleGO.h"
+#include "TransparentGO.h"
+#include "OpaqueGO.h"
 #include <assert.h>
 
 using std::string;
@@ -12,9 +13,13 @@ GameObject* GameObjectFactory::makeNewGO(string _type)
 	{
 		return new GameObject();
 	}
-	else if (_type == "EXAMPLE")
+	else if (_type == "TRANSPARENT")
 	{
-		return new ExampleGO();
+		return new TransparentGO();
+	}
+	else if (_type == "OPAQUE")
+	{
+		return new OpaqueGO();
 	}
 	else
 	{

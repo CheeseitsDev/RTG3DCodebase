@@ -108,7 +108,7 @@
     <ClInclude Include="Shader.h">
       <Filter>Scene Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ExampleGO.h">
+    <ClInclude Include="TransparentGO.h">
       <Filter>Scene Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RenderPass.h">
@@ -118,6 +118,9 @@
       <Filter>Scene Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FPSCam.h">
+      <Filter>Scene Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpaqueGO.h">
       <Filter>Scene Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -185,13 +188,16 @@
     <ClCompile Include="Shader.cpp">
       <Filter>Scene Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ExampleGO.cpp">
+    <ClCompile Include="TransparentGO.cpp">
       <Filter>Scene Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DirectionLight.cpp">
       <Filter>Scene Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FPSCam.cpp">
+      <Filter>Scene Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpaqueGO.cpp">
       <Filter>Scene Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,19 +1,19 @@
-#include "ExampleGO.h"
+#include "TransparentGO.h"
 #include "AIModel.h"
 #include "stringHelp.h"
 #include "Scene.h"
 #include "Shader.h"
 #include "Texture.h"
 
-ExampleGO::ExampleGO()
+TransparentGO::TransparentGO()
 {
 }
 
-ExampleGO::~ExampleGO()
+TransparentGO::~TransparentGO()
 {
 }
 
-void ExampleGO::Load(ifstream& _file)
+void TransparentGO::Load(ifstream& _file)
 {
 	GameObject::Load(_file);
 	StringHelp::String(_file, "MODEL", m_ModelName);
@@ -22,12 +22,12 @@ void ExampleGO::Load(ifstream& _file)
 
 }
 
-void ExampleGO::Tick(float _dt)
+void TransparentGO::Tick(float _dt)
 {
 	GameObject::Tick(_dt);
 }
 
-void ExampleGO::PreRender()
+void TransparentGO::PreRender()
 {
 	GameObject::PreRender();
 
@@ -43,14 +43,16 @@ void ExampleGO::PreRender()
 	//TODO: NORMAL MAPS!
 }
 
-void ExampleGO::Render()
+void TransparentGO::Render()
 {
 	m_model->Render();
 }
 
-void ExampleGO::Init(Scene* _scene)
+void TransparentGO::Init(Scene* _scene)
 {
 	m_ShaderProg = _scene->GetShader(m_ShaderName)->GetProg();
 	m_texture = _scene->GetTexture(m_TexName)->GetTexID();
 	m_model = _scene->GetModel(m_ModelName);
+
+	m_RP = RP_TRANSPARENT;
 }

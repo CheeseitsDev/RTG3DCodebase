@@ -174,6 +174,48 @@ void Scene::Render()
 			//actually render the GameObject
 			(*it)->Render();
 		}
+
+		if ((*it)->GetRP() & RP_TRANSPARENT)
+		{
+			// Enable blending for transparency
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Common blend mode
+			glDepthMask(GL_FALSE); // Disable writing to the depth buffer
+
+			// Collect transparent objects and sort them back to front
+			std::vector<GameObject*> transparentObjects;
+
+			for (auto it = m_GameObjects.begin(); it != m_GameObjects.end(); ++it) {
+				if ((*it)->GetRP() & RP_TRANSPARENT) {
+					transparentObjects.push_back(*it);
+				}
+			}
+
+			// Sort transparent objects based on distance to camera
+			std::sort(transparentObjects.begin(), transparentObjects.end(), [this](GameObject* a, GameObject* b) {
+				vec3 camPos = m_useCamera->GetPos();
+				float distA = glm::length(a->GetPos() - camPos);
+				float distB = glm::length(b->GetPos() - camPos);
+				return distA > distB; // sort back-to-front
+				});
+
+			// Render transparent objects
+			for (GameObject* obj : transparentObjects) 
+			{
+				GLuint SP = obj->GetShaderProg();
+				glUseProgram(SP);
+
+				m_useCamera->SetRenderValues(SP);
+				SetShaderUniforms(SP);
+
+				obj->PreRender();
+				obj->Render();
+			}
+
+			// Clean up
+			glDepthMask(GL_TRUE);
+			glDisable(GL_BLEND);
+		}
 	}
 
 	//TODO: now do the same for RP_TRANSPARENT here

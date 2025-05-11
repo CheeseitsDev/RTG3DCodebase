@@ -37,6 +37,8 @@ public:
 	//this GameObject should be drawn in THIS render pass
 	RenderPass GetRP() { return m_RP; }
 
+	glm::vec3 GetPos() { return m_pos; }
+
 protected:
 
 	string m_name;

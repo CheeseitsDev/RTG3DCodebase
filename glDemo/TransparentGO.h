@@ -5,12 +5,12 @@ class Model;
 //replicate the examples from the main.cpp
 //each Game Object has a Mesh, a texture and a shader
 //which it uses to render itself
-class ExampleGO :
+class TransparentGO :
 	public GameObject
 {
 public:
-	ExampleGO();
-	~ExampleGO();
+	TransparentGO();
+	~TransparentGO();
 
 	//load me from the file
 	virtual void Load(ifstream& _file);
