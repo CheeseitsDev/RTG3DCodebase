@@ -288,18 +288,21 @@ void keyboardHandler(GLFWwindow* _window, int _key, int _scancode, int _action, 
 
 void mouseMoveHandler(GLFWwindow* _window, double _xpos, double _ypos) 
 {
-	//float tDelta = gameClock->gameTimeDelta();
+	if (g_mouseDown)
+	{
+		//float tDelta = gameClock->gameTimeDelta();
 
-	float dx = float(_xpos - g_prevMouseX);// *360.0f * tDelta;
-	float dy = float(_ypos - g_prevMouseY);// *360.0f * tDelta;
+		float dx = float(_xpos - g_prevMouseX);// *360.0f * tDelta;
+		float dy = float(_ypos - g_prevMouseY);// *360.0f * tDelta;
 
-	/*if (g_mainCamera)
-		g_mainCamera->rotateCamera(-dy, -dx);*/
+		/*if (g_mainCamera)
+			g_mainCamera->rotateCamera(-dy, -dx);*/
 
-	g_Scene->MoveCam(-dx, -dy);
+		g_Scene->MoveCam(-dx, -dy);
 
-	g_prevMouseX = _xpos;
-	g_prevMouseY = _ypos;
+		g_prevMouseX = _xpos;
+		g_prevMouseY = _ypos;
+	}
 }
 
 void mouseButtonHandler(GLFWwindow* _window, int _button, int _action, int _mods) 
