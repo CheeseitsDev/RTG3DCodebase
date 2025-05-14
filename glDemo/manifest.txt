@@ -38,7 +38,7 @@ AMB: 0.5 0.5 0.5
 {
 TYPE: LIGHT
 NAME: RED
-POS: 5.0 5.0 0.0
+POS: 5.0 5.0 5.0
 COL: 1.0 0.0 0.0
 AMB: 0.0 0.5 0.5
 }
@@ -129,7 +129,7 @@ NAME: TRANSPARENT2
 FILE: Assets\\Textures\\transparent2.png
 }
 
-SHADERS 3
+SHADERS 4
 {
 NAME: FLAT
 VERTFILE: Assets\\Shaders\\flatColour.vert
@@ -145,10 +145,15 @@ NAME: TRANSPARENT
 VERTFILE: Assets\\Shaders\\transparent.vert
 FRAGFILE: Assets\\Shaders\\transparent.frag
 }
+{
+NAME: LIGHTING
+VERTFILE: Assets\\Shaders\\lighting.vert
+FRAGFILE: Assets\\Shaders\\lighting.frag
+}
 
 GAMEOBJECTS 5
 {
-TYPE: OPAQUE
+TYPE: TRANSPARENT
 NAME: BEAST
 POS: 0.0 0.0 0.0
 ROT: 0.0 0.0 0.0

@@ -225,5 +225,11 @@
     <None Include="transparent.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="lighting.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="lighting.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

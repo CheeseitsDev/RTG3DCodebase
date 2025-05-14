@@ -201,6 +201,18 @@ void Scene::Render()
 	// Clean up
 	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
+
+	for (list<Shader*>::iterator it = m_Shaders.begin(); it != m_Shaders.end(); it++)
+	{
+		if ((*it)->GetName() == "LIGHTING")
+		{
+			GLuint SP = (*it)->GetProg();
+			glUseProgram(SP);
+
+			m_useCamera->SetRenderValues(SP);
+			SetShaderUniforms(SP);
+		}
+	}
 }
 
 void Scene::SetShaderUniforms(GLuint _shaderprog)
