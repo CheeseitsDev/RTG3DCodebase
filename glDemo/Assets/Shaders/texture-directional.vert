@@ -31,3 +31,4 @@ void main(void) {
   // take worldCoord rest of the way into clip coords and set in gl_Position
 	gl_Position = projMatrix * viewMatrix * worldCoord;
 }
+ 

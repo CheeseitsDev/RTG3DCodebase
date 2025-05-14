@@ -6,8 +6,8 @@ in vec3 LightPos;  // Light position
 
 out vec4 FragColor; // Final color of the fragment
 
-uniform vec3 lightColor;    // Light color (set in C++)
-uniform vec3 objectColor;   // Object color (set in C++)
+uniform vec3 lightColour;    // Light color (set in C++)
+uniform vec3 objectColour;   // Object color (set in C++)
 uniform vec3 viewPos;       // Camera position (set in C++)
 
 void main()
@@ -25,12 +25,12 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32); // Shininess exponent
 
     // Lighting components
-    vec3 ambient = 0.1 * lightColor;  // Ambient light
-    vec3 diffuse = diff * lightColor; // Diffuse light
-    vec3 specular = spec * lightColor; // Specular light
+    vec3 ambient = 0.1 * lightColour;  // Ambient light
+    vec3 diffuse = diff * lightColour; // Diffuse light
+    vec3 specular = spec * lightColour; // Specular light
 
     // Final color calculation
-    vec3 result = (ambient + diffuse + specular) * objectColor;
+    vec3 result = (ambient + diffuse + specular) * objectColour;
 
     FragColor = vec4(result, 1.0);
 }
