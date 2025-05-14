@@ -1,176 +1,122 @@
 #include "FPSCam.h"
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
 
-using namespace std;
-using namespace glm;
+// Constructor with default values for position, yaw, pitch, speed, and sensitivity
+FPSCam::FPSCam()
+    : m_position(glm::vec3(0.0f, 0.0f, 3.0f)),
+    m_front(glm::vec3(0.0f, 0.0f, -1.0f)),
+    m_up(glm::vec3(0.0f, 1.0f, 0.0f)),
+    m_right(glm::vec3(1.0f, 0.0f, 0.0f)),
+    m_worldUp(glm::vec3(0.0f, 1.0f, 0.0f)),
+    m_yaw(-90.0f), m_pitch(0.0f),
+    m_speed(2.5f), m_sensitivity(0.1f)
+{
+    calculateDerivedValues();
+}
 
-// Private API
+// Constructor with custom values for position, yaw, pitch, speed, and sensitivity
+FPSCam::FPSCam(glm::vec3 position, float yaw, float pitch, float speed, float sensitivity)
+    : m_position(position), m_yaw(yaw), m_pitch(pitch), m_speed(speed), m_sensitivity(sensitivity)
+{
+    m_worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    calculateDerivedValues();
+}
 
-// Update position, orientation and view matrices based on the camera's rotation (yaw, pitch) and position
-void FPSCam::calculateDerivedValues() {
-    // Calculate the direction vector from the yaw and pitch
-    const float theta_ = glm::radians<float>(m_theta);  // Pitch (up/down)
-    const float phi_ = glm::radians<float>(m_phi);      // Yaw (left/right)
+// Update the camera's orientation based on mouse movement
+void FPSCam::processMouseMovement(float xOffset, float yOffset, bool constrainPitch)
+{
+    xOffset *= m_sensitivity;
+    yOffset *= m_sensitivity;
 
-    // Front, Right, and Up vectors
+    m_yaw += xOffset;
+    m_pitch += yOffset;
+
+    // Constrain pitch to avoid flipping the camera
+    if (constrainPitch)
+    {
+        if (m_pitch > 89.0f)
+            m_pitch = 89.0f;
+        if (m_pitch < -89.0f)
+            m_pitch = -89.0f;
+    }
+
+    calculateDerivedValues();
+}
+
+// Update the camera's position based on keyboard input and delta time
+void FPSCam::processKeyboard(float deltaTime, int input)
+{
+    float velocity = m_speed * deltaTime;
+
+    if (input == 1)
+    {
+        m_position += m_front * velocity;
+    }
+    if (input == 2)
+    {
+        m_position -= m_right * velocity;
+    }
+    if (input == 3)
+    {
+        m_position -= m_front * velocity;
+    }
+    if (input == 4)
+    {
+        m_position += m_right * velocity;
+    }
+}
+
+// Calculate the camera's direction vectors based on the yaw and pitch angles
+void FPSCam::calculateDerivedValues()
+{
     glm::vec3 front;
-    front.x = cosf(theta_) * sinf(phi_);
-    front.y = sinf(theta_);
-    front.z = cosf(theta_) * cosf(phi_);
+    front.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+    front.y = sin(glm::radians(m_pitch));
+    front.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
     m_front = glm::normalize(front);
 
-    // Calculate the right and up vectors
-    m_right = glm::normalize(glm::cross(m_front, glm::vec3(0.0f, 1.0f, 0.0f)));  // Cross product to get the right vector
-    m_up = glm::normalize(glm::cross(m_right, m_front));  // Up is the cross of right and front
-
-    // Calculate the view matrix
-    m_viewMatrix = glm::lookAt(m_position, m_position + m_front, m_up);
-
-    // Calculate the projection matrix
-    m_projectionMatrix = glm::perspective(glm::radians<float>(m_fovY), m_aspect, m_nearPlane, m_farPlane);
+    // Recalculate the right and up vectors
+    m_right = glm::normalize(glm::cross(m_front, m_worldUp));  // Right vector
+    m_up = glm::normalize(glm::cross(m_right, m_front));       // Up vector
 }
 
-
-// Public method implementation
-
-// FPSCam constructors
-
-// Initialise the camera parameters for a first-person shooter style camera
-FPSCam::FPSCam() {
-    m_position = glm::vec3(0.0f, 1.75f, 5.0f);  // Starting position, typically above ground level
-    m_theta = 0.0f;
-    m_phi = -90.0f;  // Looking down the negative z-axis (standard for FPS)
-    m_fovY = 55.0f;
-    m_aspect = 1.0f;
-    m_nearPlane = 0.1f;
-    m_farPlane = 500.0f;
-
-    calculateDerivedValues();
+// Return the camera's view matrix
+glm::mat4 FPSCam::viewTransform()
+{
+    return glm::lookAt(m_position, m_position + m_front, m_up);
 }
 
-// Create an FPS camera with initial parameters
-FPSCam::FPSCam(float _theta, float _phi, glm::vec3 _position, float _fovY, float _aspect, float _nearPlane, float _farPlane) {
-    m_position = _position;
-    m_theta = _theta;
-    m_phi = _phi;
-    m_fovY = _fovY;
-    m_aspect = _aspect;
-    m_nearPlane = _nearPlane;
-    m_farPlane = _farPlane;
-
-    calculateDerivedValues();
+// Return the camera's projection matrix
+glm::mat4 FPSCam::projectionTransform()
+{
+    return glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
 }
 
-// Accessor methods for stored values
-
-float FPSCam::getTheta() {
-    return m_theta;
-}
-
-float FPSCam::getPhi() {
-    return m_phi;
-}
-
-void FPSCam::rotateCamera(float _dTheta, float _dPhi) {
-    m_theta += _dTheta;
-    m_phi += _dPhi;
-    calculateDerivedValues();
-}
-
-glm::vec3 FPSCam::getPosition() {
+// Return the camera's position in world space
+glm::vec3 FPSCam::getPosition()
+{
     return m_position;
 }
 
-void FPSCam::moveForward(float deltaTime) {
-    if (isMoving)
-    {
-        m_position += m_front * m_moveSpeed * deltaTime;
-        calculateDerivedValues();
-    }
-}
-
-void FPSCam::moveBackward(float deltaTime) {
-    if (isMoving)
-    {
-        m_position -= m_front * m_moveSpeed * deltaTime;
-        calculateDerivedValues();
-    }
-}
-
-void FPSCam::strafeLeft(float deltaTime) {
-    if (isMoving)
-    {
-        m_position -= m_right * m_moveSpeed * deltaTime;
-        calculateDerivedValues();
-    }
-}
-
-void FPSCam::strafeRight(float deltaTime) {
-    if (isMoving)
-    {
-        m_position += m_right * m_moveSpeed * deltaTime;
-        calculateDerivedValues();
-    }
-}
-
-void FPSCam::moveUp(float deltaTime) {
-    m_position += m_up * m_moveSpeed * deltaTime;
-    calculateDerivedValues();
-}
-
-void FPSCam::moveDown(float deltaTime) {
-    m_position -= m_up * m_moveSpeed * deltaTime;
-    calculateDerivedValues();
-}
-
-float FPSCam::getFovY() {
-    return m_fovY;
-}
-
-void FPSCam::setFovY(float _fovY) {
-    this->m_fovY = _fovY;
-    calculateDerivedValues();
-}
-
-float FPSCam::getAspect() {
-    return m_aspect;
-}
-
-void FPSCam::setAspect(float _aspect) {
-    this->m_aspect = _aspect;
-    calculateDerivedValues();
-}
-
-float FPSCam::getNearPlaneDistance() {
-    return m_nearPlane;
-}
-
-void FPSCam::setNearPlaneDistance(float _nearPlaneDistance) {
-    this->m_nearPlane = _nearPlaneDistance;
-    calculateDerivedValues();
-}
-
-float FPSCam::getFarPlaneDistance() {
-    return m_farPlane;
-}
-
-void FPSCam::setFarPlaneDistance(float _farPlaneDistance) {
-    this->m_farPlane = _farPlaneDistance;
-    calculateDerivedValues();
-}
-
-void FPSCam::inputManager(int input)
+// Return the camera's front direction
+glm::vec3 FPSCam::getFront()
 {
-
+    return m_front;
 }
 
-// Accessor methods for derived values
-
-glm::mat4 FPSCam::viewTransform() {
-    return m_viewMatrix;
+// Set the camera's position
+void FPSCam::setPosition(glm::vec3 position)
+{
+    m_position = position;
 }
 
-glm::mat4 FPSCam::projectionTransform() {
-    return m_projectionMatrix;
+// Set the camera's movement speed
+void FPSCam::setSpeed(float speed)
+{
+    m_speed = speed;
+}
+
+// Set the mouse sensitivity for camera rotation
+void FPSCam::setSensitivity(float sensitivity)
+{
+    m_sensitivity = sensitivity;
 }

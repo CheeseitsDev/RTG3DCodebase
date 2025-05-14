@@ -71,7 +71,6 @@ ArcballCamera::ArcballCamera(float _theta, float _phi, float _radius, float _fov
 	//F.calculateWorldCoordPlanes(C, R);
 }
 
-
 #pragma region Accessor methods for stored values
 
 // return the pivot rotation around the x axis (theta) in degrees

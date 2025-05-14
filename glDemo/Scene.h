@@ -9,6 +9,7 @@ using namespace std;
 
 class GameObject;
 class Camera;
+class ArcballCamera;
 class FPSCam;
 class Light;
 class Model;
@@ -23,7 +24,7 @@ public:
 	~Scene();
 
 	//tick all GOs
-	void Update(float _dt, int _input);
+	void Update(float _dt);
 
 	//add this GO to my list
 	void AddGameObject(GameObject* _new);
@@ -48,15 +49,19 @@ public:
 	//initialise links between items in the scene
 	void Init();
 
-	void SetCam();
+	void ACam();
 
-	void SetACam();
+	void FCam();
 
-	void SetFPSCam();
+	void MoveCam(float x, float y);
 
-	void UpdateCams(float _aspect);
+	void StopCamMovement();
 
-	void MoveFPSCam(int input);
+	void ZoomCamInAndOut(float radius);
+
+	string CurrentCam();
+
+	void SetInput(int input);
 
 protected:
 
@@ -75,7 +80,12 @@ protected:
 	std::list<GameObject*> m_GameObjects;
 
 	Camera* m_useCamera = nullptr; //current main camera in use
+	ArcballCamera* aCam = nullptr;
+	FPSCam* fCam = nullptr;
 	int m_useCameraIndex = 0;
+	float moveX;
+	float moveY;
+	int input;
 	//TODO: pass down the same keyboard input from main so that we skip through all the cameras
 };
 

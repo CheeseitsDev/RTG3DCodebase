@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "CameraFactory.h"
 #include "Camera.h"
+#include "ArcballCamera.h"
 #include "FPSCam.h"
 #include "LightFactory.h"
 #include "Light.h"
@@ -23,7 +24,7 @@ Scene::~Scene()
 }
 
 //tick all my Game Objects, lights and cameras
-void Scene::Update(float _dt, int _input)
+void Scene::Update(float _dt)
 {
 	//update all lights
 	for (list<Light*>::iterator it = m_Lights.begin(); it != m_Lights.end(); it++)
@@ -34,7 +35,7 @@ void Scene::Update(float _dt, int _input)
 	//update all cameras
 	for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); it++)
 	{
-		(*it)->Tick(_dt, _input);
+		(*it)->Tick(_dt, moveX, moveY, CurrentCam(), input);
 	}
 
 	//update all GameObjects
@@ -162,7 +163,56 @@ void Scene::Render()
 		}
 	}
 
-	//TODO: now do the same for RP_TRANSPARENT here
+	// Enable blending for transparency
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Common blend mode
+	glDepthMask(GL_FALSE); // Disable writing to the depth buffer
+
+	// Collect transparent objects and sort them back to front
+	std::vector<GameObject*> transparentObjects;
+
+	for (auto it = m_GameObjects.begin(); it != m_GameObjects.end(); ++it) {
+		if ((*it)->GetRP() & RP_TRANSPARENT) {
+			transparentObjects.push_back(*it);
+		}
+	}
+
+	// Sort transparent objects based on distance to camera
+	std::sort(transparentObjects.begin(), transparentObjects.end(), [this](GameObject* a, GameObject* b) {
+		vec3 camPos = m_useCamera->GetPos();
+		float distA = glm::length(a->GetPos() - camPos);
+		float distB = glm::length(b->GetPos() - camPos);
+		return distA > distB; // sort back-to-front
+		});
+
+	// Render transparent objects
+	for (GameObject* obj : transparentObjects)
+	{
+		GLuint SP = obj->GetShaderProg();
+		glUseProgram(SP);
+
+		m_useCamera->SetRenderValues(SP);
+		SetShaderUniforms(SP);
+
+		obj->PreRender();
+		obj->Render();
+	}
+
+	// Clean up
+	glDepthMask(GL_TRUE);
+	glDisable(GL_BLEND);
+
+	for (list<Shader*>::iterator it = m_Shaders.begin(); it != m_Shaders.end(); it++)
+	{
+		if ((*it)->GetName() == "LIGHTING")
+		{
+			GLuint SP = (*it)->GetProg();
+			glUseProgram(SP);
+
+			m_useCamera->SetRenderValues(SP);
+			SetShaderUniforms(SP);
+		}
+	}
 }
 
 void Scene::SetShaderUniforms(GLuint _shaderprog)
@@ -316,7 +366,7 @@ void Scene::Init()
 	for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
 	{
 		(*it)->Init(100, 100, this);// TODO: set correct screen sizes here
-		
+
 		//if a camera is called MAIN
 		//this will be the starting camera used
 		if ((*it)->GetName() == "MAIN")
@@ -341,67 +391,88 @@ void Scene::Init()
 	}
 }
 
-void Scene::SetCam()
+string Scene::CurrentCam()
 {
-	if (m_useCameraIndex < m_numCameras)
+	return m_useCamera->GetName();
+}
+
+void Scene::ACam()
+{
+	if (m_useCamera->GetName() != "ACAM")
 	{
 		for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
 		{
-			for (int i = 0; i < m_numCameras; i++)
+			if ((*it)->GetName() == "ACAM")
 			{
-				if (i == m_useCameraIndex)
-				{
-					m_useCamera = (*it);
-					m_useCameraIndex++;
-					break;
-				}
+				m_useCamera = (*it);
+				break;
 			}
 		}
 	}
 	else
 	{
-		m_useCamera = (*m_Cameras.begin());
-		m_useCameraIndex = 0;
-	}
-}
-
-void Scene::SetACam()
-{
-	for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
-	{
-		if ((*it)->GetType() == "ARCBALLCAM")
+		for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
 		{
-			m_useCamera = (*it);
+			if ((*it)->GetName() == "CAM1")
+			{
+				m_useCamera = (*it);
+				break;
+			}
 		}
 	}
 }
 
-void Scene::SetFPSCam()
+void Scene::FCam()
 {
-	for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
+	if (m_useCamera->GetName() != "FPSCAM")
 	{
-		if ((*it)->GetType() == "FPSCAM")
+		for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
 		{
-			m_useCamera = (*it);
+			if ((*it)->GetName() == "FPSCAM")
+			{
+				m_useCamera = (*it);
+				break;
+			}
+		}
+	}
+	else
+	{
+		for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
+		{
+			if ((*it)->GetName() == "CAM1")
+			{
+				m_useCamera = (*it);
+				break;
+			}
 		}
 	}
 }
 
-void Scene::UpdateCams(float _aspect)
+void Scene::MoveCam(float x, float y)
 {
-	for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
+	moveX = x;
+	moveY = y;
+}
+
+void Scene::StopCamMovement()
+{
+	moveX = 0;
+	moveY = 0;
+}
+
+void Scene::ZoomCamInAndOut(float radius)
+{
+	if (m_useCamera->GetName() == "ACAM")
 	{
-		(*it)->SetAspect(_aspect);
+		cout << radius << endl;
+		aCam->scaleRadius(radius);
 	}
 }
 
-void Scene::MoveFPSCam(int input)
+
+void Scene::SetInput(int userInput)
 {
-	for (list<Camera*>::iterator it = m_Cameras.begin(); it != m_Cameras.end(); ++it)
-	{
-		if ((*it)->GetType() == "FPSCAM")
-		{
-			
-		}
-	}
+	input = userInput;
+
+	cout << "Input: " << input << endl;
 }

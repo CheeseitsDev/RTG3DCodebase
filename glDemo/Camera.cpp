@@ -3,6 +3,8 @@
 #include <fstream>
 #include <iostream>
 #include "stringHelp.h"
+#include "FPSCam.h"
+#include "ArcballCamera.h"
 
 using namespace std;
 
@@ -35,9 +37,40 @@ void Camera::Init(float _screenWidth, float _screenHeight, Scene* _scene)
 /////////////////////////////////////////////////////////////////////////////////////
 // Update() - 
 /////////////////////////////////////////////////////////////////////////////////////
-void Camera::Tick(float _dt, int input)
+void Camera::Tick(float _dt, float x, float y, string currentCam, int input)
 {
-	m_viewMatrix = glm::lookAt(m_pos, m_lookAt, vec3(0, 1, 0));
+	if (currentCam == "FPSCAM")
+	{
+		fCam = dynamic_cast<FPSCam*>(this);
+		aCam = nullptr;
+	}
+	else if (currentCam == "ACAM")
+	{
+		aCam = dynamic_cast<ArcballCamera*>(this);
+		fCam = nullptr;
+	}
+
+	if (fCam)
+	{
+		// Update FPSCam view matrix (for FPS-style cameras)
+		fCam->processKeyboard(_dt, input);
+		fCam->processMouseMovement(x, y, true);
+
+		// Update the view matrix using the FPSCam method
+		m_viewMatrix = fCam->viewTransform();
+	}
+	else if (aCam)
+	{
+		// Update ArcballCamera view matrix (for arcball-style cameras)
+		aCam->rotateCamera(x, y);
+		// Update the view matrix using the ArcballCamera method
+		m_viewMatrix = aCam->viewTransform();
+	}
+	else
+	{
+		// Default camera view matrix logic (if the camera is not FPSCam)
+		m_viewMatrix = glm::lookAt(m_pos, m_lookAt, glm::vec3(0.0f, 1.0f, 0.0f));
+	}
 }
 
 void Camera::Load(ifstream& _file)
@@ -66,10 +99,4 @@ void Camera::SetRenderValues(unsigned int _prog)
 	//the current camera is at this position
 	if (Helper::SetUniformLocation(_prog, "camPos", &loc))
 		glUniform3fv(loc, 1, glm::value_ptr(GetPos()));
-}
-
-void Camera::SetAspect(float _aspect) 
-{
-	float aspect_ratio = _aspect;
-	m_projectionMatrix = glm::perspective(glm::radians(m_fov), aspect_ratio, m_near, m_far);
 }

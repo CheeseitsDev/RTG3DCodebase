@@ -92,15 +92,15 @@ static float colourArray[] = {
 static unsigned int indexArray[] = {
 
 	// Top face
-	2, 1, 0,  
+	2, 1, 0,
 	3, 2, 0,
 
 	// Bottom face
-	5, 6, 4, 
+	5, 6, 4,
 	6, 7, 4,
 
 	// Right face
-	8, 9, 10, 
+	8, 9, 10,
 	9, 11, 10,
 
 	// Front face
@@ -110,7 +110,7 @@ static unsigned int indexArray[] = {
 	// Left face
 	13, 14, 12,
 	15, 14, 13,
-	
+
 	// Back face
 	20, 21, 22,
 	21, 23, 22
@@ -135,7 +135,7 @@ Cube::Cube() {
 	// setup vbo for colour attribute
 	glGenBuffers(1, &m_colourBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, m_colourBuffer);
-	glBufferData(GL_ARRAY_BUFFER, 96 * sizeof(float), colourArray, GL_STATIC_DRAW); 
+	glBufferData(GL_ARRAY_BUFFER, 96 * sizeof(float), colourArray, GL_STATIC_DRAW);
 	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
 	glEnableVertexAttribArray(4);
 
@@ -161,5 +161,5 @@ Cube::~Cube() {
 
 void Cube::render() {
 	glBindVertexArray(m_vao);
-	glDrawElements(GL_TRIANGLES, m_numFaces * 3 , GL_UNSIGNED_INT, (const GLvoid*)0);
+	glDrawElements(GL_TRIANGLES, m_numFaces * 3, GL_UNSIGNED_INT, (const GLvoid*)0);
 }
